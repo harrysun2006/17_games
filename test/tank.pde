@@ -18,41 +18,22 @@ void trace() {
    println.apply(this,ss);
 }
 
-var Bullet=function(x,y,a) {
-   this.owner=null;
-   this.x=x;
-   this.y=y;
-   this.a=a;
-   this.p=10;
-   this.vv=5;
-   this.vx=this.vv*sin(this.a);
-   this.vy=this.vv*cos(this.a);
+var Stage=function(w,h) {
+   this.w=w;
+   this.h=h;
+   var i,j,m=[];
+   for(i=0;i<h;i++) {
+      m[i]=[];
+      for(j=0;j<w;j++) m[i][j]=0;
+   }
+   this.map=m;
+   this.objs=[];
 };
 
-Bullet.prototype.fly=function(){
-   this.x+=this.vx;
-   this.y-=this.vy;
-};
 
-Bullet.prototype.gone=function(){
-   return this.x<0 || this.x>ww
-      || this.y<0 || this.y>hh
-      || this.p<=0;
-};
-
-Bullet.prototype.draw=function(){
-   this.fly();
-   translate(this.x,this.y);
-   rotate(this.a);
-   stroke(red);
-   strokeWeight(this.p);
-   line(0,10,0,15);
-   noStroke();
-   rotate(-this.a);
-   translate(-this.x,-this.y);
-};
-
-var Tank=function(x,y) {
+var Tank=function(stage,x,y,g) {
+   this.stage=stage;
+   this.g=g; // group
    this.a=0; // angle
    this.x=x; // location
    this.y=y;
@@ -65,7 +46,7 @@ var Tank=function(x,y) {
    this.ta=0;
    this.tx=x;
    this.ty=y;
-   this.vb=12;
+   this.vb=20;
    this.bi=0;
    this.bb=[];
 };
@@ -135,6 +116,7 @@ Tank.prototype.move=function() {
 
 Tank.prototype.frame=function() {
    stroke(grey);
+   strokeWeight(1);
    fill(none);
    rect(-this.w/2,-this.h/2,this.w,this.h);
    noStroke();
@@ -148,28 +130,56 @@ Tank.prototype.draw=function() {
    fill(dark);
    rotate(this.a);
    rect(-8,-25,16,22);
-   fill(blue);
+   fill(this.g==1?blue:red);
    ellipse(0,10,30,30);
    rotate(-this.a);
    translate(-this.x,-this.y);
 };
 
-Tank.prototype.remove=function(b)
-{
-   var idx=this.bb.index(b);
-   trace(idx);
-   if(idx>=0) {
-      this.bb.remove(idx);
-   }
+var Bullet=function(x,y,a) {
+   this.owner=null;
+   this.x=x;
+   this.y=y;
+   this.a=a;
+   this.p=15;
+   this.vv=5;
+   this.vx=this.vv*sin(this.a);
+   this.vy=this.vv*cos(this.a);
 };
 
-var tank1;
+Bullet.prototype.fly=function(){
+   this.x+=this.vx;
+   this.y-=this.vy;
+};
+
+Bullet.prototype.gone=function(){
+   return this.x<0 || this.x>ww
+      || this.y<0 || this.y>hh
+      || this.p<=0;
+};
+
+Bullet.prototype.draw=function(){
+   this.fly();
+   var g=this.owner.g;
+   translate(this.x,this.y);
+   rotate(this.a);
+   stroke(g==1?red:blue);
+   strokeWeight(this.p);
+   line(0,20,0,20);
+   noStroke();
+   rotate(-this.a);
+   translate(-this.x,-this.y);
+};
+
+var stage,tank1,tank2;
 
 void setup() {
    size(screen.width, screen.height);
    smooth();
    //size(4800,3200);
-   tank1=new Tank(200,200);
+   stage=new Stage(4800,4800);
+   tank1=new Tank(stage,200,200,1);
+   tank2=new Tank(stage,250,250,2);
 }
 
 void draw() {
@@ -179,4 +189,5 @@ void draw() {
       tank1.head(mouseX,mouseY);
    }
    tank1.draw();
+   tank2.draw();
 }
