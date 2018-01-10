@@ -1,0 +1,26 @@
+<script src="http://js.do/js/processing-1.1.0.min.js"></script>
+
+<script type="application/processing" id="script1">
+void setup() {
+  size(520,220);
+  String url = "processing-web.png";
+  // Load image from a web server
+  webImg = loadImage(url);
+}
+
+void draw() {
+  background(0);
+  image(webImg, 0, 0);
+}
+ 
+
+</script>
+ 
+<canvas id="canvas1"></canvas>
+ 
+<script>
+ var script_text = document.getElementById('script1').text;
+ var canvas=document.getElementById('canvas1');
+
+ new Processing(canvas, script_text);
+</script>
